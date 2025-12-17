@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OX 퀴즈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #831843 100%);
+            padding: 16px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 4px;
+        }
+        
+        .title .green { color: #4ade80; }
+        .title .gray { color: #d1d5db; }
+        .title .red { color: #f87171; }
+        
+        .subtitle {
+            color: #c4b5fd;
+            font-size: 0.95rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: #e9d5ff;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .input-field:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3);
+        }
+        
+        .slider-container {
+            margin-bottom: 18px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            margin-top: 10px;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #a78bfa;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .btn-purple {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            color: white;
+        }
+        
+        .btn-blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .score-badge {
+            background: rgba(234, 179, 8, 0.3);
+            color: #fde047;
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-weight: bold;
+        }
+        
+        .timer-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            height: 12px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            transition: width 1s linear, background-color 0.3s;
+            border-radius: 20px;
+        }
+        
+        .timer-green { background: #22c55e; }
+        .timer-yellow { background: #eab308; }
+        .timer-red { background: #ef4444; }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        
+        .question-badge {
+            background: rgba(168, 85, 247, 0.5);
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 28px;
+            line-height: 1.7;
+        }
+        
+        .timer-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .timer-warning {
+            color: #f87171;
+            animation: pulse 0.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .answer-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        
+        .answer-btn {
+            padding: 35px 12px;
+            border: none;
+            border-radius: 20px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+            color: white;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .answer-btn:active {
+            transform: scale(0.94);
+        }
+        
+        .btn-o {
+            background: linear-gradient(135deg, #22c55e 0%, #059669 100%);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+        
+        .btn-x {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .answer-icon {
+            font-size: 2.2rem;
+        }
+        
+        .result-box {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+        }
+        
+        .result-correct {
+            background: rgba(34, 197, 94, 0.3);
+            border: 2px solid #4ade80;
+        }
+        
+        .result-wrong {
+            background: rgba(239, 68, 68, 0.3);
+            border: 2px solid #f87171;
+        }
+        
+        .result-timeout {
+            background: rgba(107, 114, 128, 0.3);
+            border: 2px solid #9ca3af;
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        
+        .result-correct .result-title { color: #4ade80; }
+        .result-wrong .result-title { color: #f87171; }
+        .result-timeout .result-title { color: #9ca3af; }
+        
+        .explanation-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .explanation-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 6px;
+        }
+        
+        .final-result {
+            text-align: center;
+        }
+        
+        .trophy-icon {
+            font-size: 4rem;
+            margin-bottom: 12px;
+        }
+        
+        .final-title {
+            font-size: 1.9rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+        
+        .stat-yellow { color: #fbbf24; }
+        .stat-purple { color: #c084fc; }
+        .stat-green { color: #4ade80; }
+        .stat-blue { color: #60a5fa; }
+        
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .rank-1 { background: rgba(234, 179, 8, 0.25); border: 1px solid rgba(234, 179, 8, 0.6); }
+        .rank-2 { background: rgba(156, 163, 175, 0.25); border: 1px solid rgba(156, 163, 175, 0.6); }
+        .rank-3 { background: rgba(217, 119, 6, 0.25); border: 1px solid rgba(217, 119, 6, 0.6); }
+        .rank-other { background: rgba(255, 255, 255, 0.05); }
+        
+        .rank-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        
+        .rank-1 .rank-badge { background: #eab308; color: #422006; }
+        .rank-2 .rank-badge { background: #9ca3af; color: #1f2937; }
+        .rank-3 .rank-badge { background: #d97706; color: #422006; }
+        .rank-other .rank-badge { background: rgba(255, 255, 255, 0.2); }
+        
+        .player-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .player-name {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .player-stats {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 2px;
+        }
+        
+        .player-score {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .score-value {
+            font-weight: bold;
+            color: #fbbf24;
+            font-size: 1.05rem;
+        }
+        
+        .score-detail {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 32px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .leaderboard-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        .btn-small {
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            width: auto;
+            margin-bottom: 0;
+        }
+        
+        .leaderboard-list {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            margin-top: 24px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .participant-count {
+            background: rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+            padding: 12px 16px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 18px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .my-entry {
+            background: rgba(168, 85, 247, 0.35) !important;
+            border: 2px solid #a855f7 !important;
+        }
+        
+        .qr-section {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        
+        .qr-code {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 12px 0;
+        }
+        
+        .qr-code img {
+            display: block;
+            width: 160px;
+            height: 160px;
+        }
+        
+        .qr-text {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .qr-toggle {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .qr-toggle:active {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+        
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 16px 0;
+        }
+        
+        /* 모바일 최적화 */
+        @media (max-width: 400px) {
+            .title { font-size: 1.8rem; }
+            .question-text { font-size: 1.1rem; }
+            .answer-btn { padding: 28px 10px; font-size: 2rem; }
+            .stats-grid { gap: 8px; }
+            .stat-value { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1 class="title">
+                <span class="green">O</span>
+                <span class="gray">/</span>
+                <span class="red">X</span>
+                퀴즈
+            </h1>
+            <p class="subtitle">빠르고 정확하게 답하세요!</p>
+        </div>
+        
+        <!-- 설정 화면 -->
+        <div id="setup-screen" class="card">
+            <!-- QR 코드 섹션 -->
+            <div class="qr-section">
+                <button class="qr-toggle" onclick="toggleQR()">
+                    📱 <span id="qr-toggle-text">QR 코드로 공유하기</span>
+                </button>
+                <div id="qr-container" class="hidden">
+                    <div class="qr-code">
+                        <img id="qr-image" src="" alt="QR Code">
+                    </div>
+                    <p class="qr-text">QR 코드를 스캔하여 참여하세요!</p>
+                </div>
+            </div>
+            
+            <div class="participant-count">
+                🎮 총 참여 기록: <span id="total-participants">0</span>회
+            </div>
+            
+            <div class="input-group">
+                <label>참가자 이름</label>
+                <input type="text" id="player-name" class="input-field" placeholder="이름을 입력하세요" maxlength="20" autocomplete="off">
+            </div>
+            
+            <div class="slider-container">
+                <label>문제당 제한시간: <span id="time-display">15</span>초</label>
+                <input type="range" id="time-slider" class="slider" min="5" max="30" value="15">
+            </div>
+            
+            <button class="btn btn-primary" onclick="startGame()">
+                ▶ 퀴즈 시작하기
+            </button>
+            
+            <button class="btn btn-secondary" onclick="showLeaderboard()">
+                🏆 리더보드 보기
+            </button>
+        </div>
+        
+        <!-- 퀴즈 화면 -->
+        <div id="quiz-screen" class="hidden">
+            <div class="status-bar">
+                <div>👤 <span id="display-name"></span></div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="question-counter">문제 1/8</span>
+                    <span class="score-badge" id="current-score">0점</span>
+                </div>
+            </div>
+            
+            <div class="timer-bar" id="timer-bar-container">
+                <div class="timer-fill timer-green" id="timer-fill"></div>
+            </div>
+            
+            <div class="card">
+                <div class="question-header">
+                    <span class="question-badge" id="question-badge">Q1</span>
+                    <div class="timer-display" id="timer-display">⏱ 15초</div>
+                </div>
+                
+                <p class="question-text" id="question-text"></p>
+                
+                <div id="answer-buttons" class="answer-buttons">
+                    <button class="answer-btn btn-o" onclick="submitAnswer(true)">
+                        <span class="answer-icon">✓</span>
+                        <span>O</span>
+                    </button>
+                    <button class="answer-btn btn-x" onclick="submitAnswer(false)">
+                        <span class="answer-icon">✗</span>
+                        <span>X</span>
+                    </button>
+                </div>
+                
+                <div id="explanation-section" class="hidden">
+                    <div id="result-box" class="result-box">
+                        <div class="result-title" id="result-title"></div>
+                        <p id="correct-answer"></p>
+                    </div>
+                    
+                    <div class="explanation-box">
+                        <p class="explanation-label">💡 해설</p>
+                        <p id="explanation-text"></p>
+                    </div>
+                    
+                    <button class="btn btn-purple" onclick="nextQuestion()">
+                        <span id="next-btn-text">다음 문제</span> →
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 결과 화면 -->
+        <div id="result-screen" class="card hidden">
+            <div class="final-result">
+                <div class="trophy-icon">🏆</div>
+                <h2 class="final-title">퀴즈 완료!</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <p class="stat-label">총점</p>
+                        <p class="stat-value stat-yellow" id="final-score">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <p class="stat-label">순위</p>
+                        <p class="stat-value stat-purple" id="final-rank">#1</p>
+                    </div>
+                    <div class="stat-box">
+                        <p class="stat-label">정답률</p>
+                        <p class="stat-value stat-green" id="final-accuracy">0%</p>
+                    </div>
+                    <div class="stat-box">
+                        <p class="stat-label">평균 응답시간</p>
+                        <p class="stat-value stat-blue" id="final-time">0초</p>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="resetGame()">
+                    🔄 다시 도전하기
+                </button>
+                
+                <button class="btn btn-secondary" onclick="showLeaderboard()">
+                    🏆 전체 순위 보기
+                </button>
+            </div>
+        </div>
+        
+        <!-- 리더보드 화면 -->
+        <div id="leaderboard-screen" class="card hidden">
+            <div class="header-row">
+                <h2 class="leaderboard-title">🏆 리더보드</h2>
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-small" onclick="showSetup()">돌아가기</button>
+                </div>
+            </div>
+            
+            <div id="leaderboard-list" class="leaderboard-list"></div>
+            
+            <div class="divider"></div>
+            
+            <button class="btn btn-danger btn-small" onclick="resetLeaderboard()" style="width: 100%;">
+                🗑 리더보드 초기화
+            </button>
+        </div>
+        
+        <p class="footer">과학 OX 퀴즈 | 빠르고 정확하게!</p>
+    </div>
+    
+    <script>
+        // ========================================
+        // 퀴즈 문제 데이터 (여기서 수정 가능)
+        // ========================================
+        const quizzes = [
+            { 
+                id: 1, 
+                question: "빛의 속도는 초속 약 30만 km이다.", 
+                answer: true, 
+                explanation: "빛의 속도는 진공에서 약 299,792 km/s입니다." 
+            },
+            { 
+                id: 2, 
+                question: "물은 섭씨 100도에서 항상 끓는다.", 
+                answer: false, 
+                explanation: "물의 끓는점은 기압에 따라 달라집니다. 높은 산에서는 100도 이하에서 끓습니다." 
+            },
+            { 
+                id: 3, 
+                question: "다이아몬드와 연필심(흑연)은 같은 원소로 이루어져 있다.", 
+                answer: true, 
+                explanation: "둘 다 탄소(C)로만 이루어져 있으며, 원자 배열 구조만 다릅니다." 
+            },
+            { 
+                id: 4, 
+                question: "지구에서 가장 가까운 별은 태양이다.", 
+                answer: true, 
+                explanation: "태양은 지구에서 약 1억 5천만 km 떨어진 가장 가까운 별입니다." 
+            },
+            { 
+                id: 5, 
+                question: "소리는 진공에서도 전달될 수 있다.", 
+                answer: false, 
+                explanation: "소리는 매질(공기, 물 등)이 있어야 전달됩니다. 진공에서는 전달되지 않습니다." 
+            },
+            { 
+                id: 6, 
+                question: "인간의 뼈 개수는 어린이가 성인보다 많다.", 
+                answer: true, 
+                explanation: "어린이는 약 300개, 성인은 약 206개의 뼈를 가지고 있습니다. 성장하면서 일부 뼈가 융합됩니다." 
+            },
+            { 
+                id: 7, 
+                question: "번개가 치면 소리보다 빛이 먼저 보인다.", 
+                answer: true, 
+                explanation: "빛의 속도(약 30만 km/s)가 소리의 속도(약 340 m/s)보다 훨씬 빠르기 때문입니다." 
+            },
+            { 
+                id: 8, 
+                question: "금은 물에 뜬다.", 
+                answer: false, 
+                explanation: "금의 밀도(19.3 g/cm³)는 물(1 g/cm³)보다 훨씬 크므로 물에 가라앉습니다." 
+            },
+        ];
+        
+        // ========================================
+        // 게임 상태 변수
+        // ========================================
+        let playerName = '';
+        let timeLimit = 15;
+        let currentQuestion = 0;
+        let score = 0;
+        let totalTime = 0;
+        let correctCount = 0;
+        let remainingTime = 15;
+        let questionStartTime = null;
+        let timerInterval = null;
+        let myTimestamp = null;
+        let answering = false;
+        let leaderboard = [];
+        let qrVisible = false;
+        
+        // ========================================
+        // 로컬 스토리지 함수
+        // ========================================
+        function loadLeaderboard() {
+            try {
+                const saved = localStorage.getItem('ox-quiz-leaderboard');
+                if (saved) {
+                    leaderboard = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.log('리더보드 로드 실패');
+                leaderboard = [];
+            }
+        }
+        
+        function saveLeaderboard() {
+            try {
+                localStorage.setItem('ox-quiz-leaderboard', JSON.stringify(leaderboard));
+            } catch (e) {
+                console.error('리더보드 저장 실패');
+            }
+        }
+        
+        // ========================================
+        // QR 코드 함수
+        // ========================================
+        function generateQRUrl() {
+            const currentUrl = window.location.href;
+            return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
+        }
+        
+        function toggleQR() {
+            const container = document.getElementById('qr-container');
+            const toggleText = document.getElementById('qr-toggle-text');
+            const qrImage = document.getElementById('qr-image');
+            
+            qrVisible = !qrVisible;
+            
+            if (qrVisible) {
+                qrImage.src = generateQRUrl();
+                container.classList.remove('hidden');
+                toggleText.textContent = 'QR 코드 숨기기';
+            } else {
+                container.classList.add('hidden');
+                toggleText.textContent = 'QR 코드로 공유하기';
+            }
+        }
+        
+        // ========================================
+        // 화면 전환 함수
+        // ========================================
+        function showScreen(screenId) {
+            ['setup-screen', 'quiz-screen', 'result-screen', 'leaderboard-screen'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+        
+        function showSetup() {
+            updateParticipantCount();
+            showScreen('setup-screen');
+        }
+        
+        function updateParticipantCount() {
+            document.getElementById('total-participants').textContent = leaderboard.length;
+        }
+        
+        // ========================================
+        // 게임 로직
+        // ========================================
+        document.getElementById('time-slider').addEventListener('input', function() {
+            timeLimit = parseInt(this.value);
+            document.getElementById('time-display').textContent = timeLimit;
+        });
+        
+        // Enter 키로 게임 시작
+        document.getElementById('player-name').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startGame();
+            }
+        });
+        
+        function startGame() {
+            playerName = document.getElementById('player-name').value.trim();
+            if (!playerName) {
+                alert('이름을 입력해주세요!');
+                document.getElementById('player-name').focus();
+                return;
+            }
+            
+            currentQuestion = 0;
+            score = 0;
+            totalTime = 0;
+            correctCount = 0;
+            
+            document.getElementById('display-name').textContent = playerName;
+            document.getElementById('current-score').textContent = '0점';
+            
+            showScreen('quiz-screen');
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            answering = false;
+            const quiz = quizzes[currentQuestion];
+            
+            document.getElementById('question-counter').textContent = `문제 ${currentQuestion + 1}/${quizzes.length}`;
+            document.getElementById('question-badge').textContent = `Q${currentQuestion + 1}`;
+            document.getElementById('question-text').textContent = quiz.question;
+            
+            document.getElementById('answer-buttons').classList.remove('hidden');
+            document.getElementById('explanation-section').classList.add('hidden');
+            document.getElementById('timer-bar-container').classList.remove('hidden');
+            
+            remainingTime = timeLimit;
+            questionStartTime = Date.now();
+            updateTimerDisplay();
+            startTimer();
+        }
+        
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                remainingTime--;
+                updateTimerDisplay();
+                
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    submitAnswer(null);
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const timerDisplay = document.getElementById('timer-display');
+            const timerFill = document.getElementById('timer-fill');
+            
+            timerDisplay.textContent = `⏱ ${remainingTime}초`;
+            timerFill.style.width = `${(remainingTime / timeLimit) * 100}%`;
+            
+            timerFill.className = 'timer-fill';
+            if (remainingTime > timeLimit * 0.6) {
+                timerFill.classList.add('timer-green');
+            } else if (remainingTime > timeLimit * 0.3) {
+                timerFill.classList.add('timer-yellow');
+            } else {
+                timerFill.classList.add('timer-red');
+            }
+            
+            if (remainingTime <= 5) {
+                timerDisplay.classList.add('timer-warning');
+            } else {
+                timerDisplay.classList.remove('timer-warning');
+            }
+        }
+        
+        function submitAnswer(answer) {
+            if (answering) return;
+            answering = true;
+            
+            clearInterval(timerInterval);
+            
+            const timeTaken = (Date.now() - questionStartTime) / 1000;
+            const quiz = quizzes[currentQuestion];
+            const isCorrect = answer === quiz.answer;
+            const isTimeout = answer === null;
+            
+            // 점수 계산: 정답 시 기본 100점 + 시간 보너스
+            let questionScore = 0;
+            if (isCorrect) {
+                const timeBonus = Math.max(0, Math.floor((timeLimit - timeTaken) * 10));
+                questionScore = 100 + timeBonus;
+                correctCount++;
+            }
+            
+            score += questionScore;
+            totalTime += timeTaken;
+            
+            document.getElementById('current-score').textContent = `${score}점`;
+            
+            // 결과 표시
+            const resultBox = document.getElementById('result-box');
+            const resultTitle = document.getElementById('result-title');
+            
+            resultBox.className = 'result-box';
+            
+            if (isTimeout) {
+                resultBox.classList.add('result-timeout');
+                resultTitle.textContent = '⏱ 시간 초과!';
+            } else if (isCorrect) {
+                resultBox.classList.add('result-correct');
+                resultTitle.textContent = `✓ 정답! +${questionScore}점`;
+            } else {
+                resultBox.classList.add('result-wrong');
+                resultTitle.textContent = '✗ 오답!';
+            }
+            
+            document.getElementById('correct-answer').textContent = `정답: ${quiz.answer ? 'O' : 'X'}`;
+            document.getElementById('explanation-text').textContent = quiz.explanation;
+            
+            document.getElementById('next-btn-text').textContent = 
+                currentQuestion + 1 >= quizzes.length ? '결과 보기' : '다음 문제';
+            
+            document.getElementById('answer-buttons').classList.add('hidden');
+            document.getElementById('explanation-section').classList.remove('hidden');
+            document.getElementById('timer-bar-container').classList.add('hidden');
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion >= quizzes.length) {
+                finishGame();
+            } else {
+                showQuestion();
+            }
+        }
+        
+        function finishGame() {
+            const accuracy = Math.round((correctCount / quizzes.length) * 100);
+            const avgTime = (totalTime / quizzes.length).toFixed(1);
+            
+            myTimestamp = Date.now();
+            
+            // 리더보드에 추가
+            const entry = {
+                name: playerName,
+                score: score,
+                correct: correctCount,
+                total: quizzes.length,
+                accuracy: accuracy,
+                avgTime: avgTime,
+                timestamp: myTimestamp
+            };
+            
+            leaderboard.push(entry);
+            leaderboard.sort((a, b) => b.score - a.score || parseFloat(a.avgTime) - parseFloat(b.avgTime));
+            leaderboard = leaderboard.slice(0, 100); // 상위 100명만 유지
+            saveLeaderboard();
+            
+            // 순위 찾기
+            const rank = leaderboard.findIndex(e => e.timestamp === myTimestamp) + 1;
+            
+            // 결과 표시
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-rank').textContent = `#${rank}`;
+            document.getElementById('final-accuracy').textContent = `${accuracy}%`;
+            document.getElementById('final-time').textContent = `${avgTime}초`;
+            
+            showScreen('result-screen');
+        }
+        
+        function resetGame() {
+            document.getElementById('player-name').value = '';
+            myTimestamp = null;
+            updateParticipantCount();
+            showScreen('setup-screen');
+        }
+        
+        // ========================================
+        // 리더보드 함수
+        // ========================================
+        function renderLeaderboard() {
+            const listEl = document.getElementById('leaderboard-list');
+            
+            if (leaderboard.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <p>아직 참가자가 없습니다.</p>
+                        <p style="font-size: 0.85rem; margin-top: 8px;">첫 번째 도전자가 되어보세요!</p>
+                    </div>
+                `;
+            } else {
+                listEl.innerHTML = leaderboard.map((entry, index) => {
+                    const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-other';
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : (index + 1);
+                    const isMe = entry.timestamp === myTimestamp;
+                    const myClass = isMe ? 'my-entry' : '';
+                    
+                    return `
+                        <div class="leaderboard-item ${rankClass} ${myClass}">
+                            <div class="rank-badge">${medal}</div>
+                            <div class="player-info">
+                                <p class="player-name">${entry.name}${isMe ? ' (나)' : ''}</p>
+                                <p class="player-stats">정답률 ${entry.accuracy}% · 평균 ${entry.avgTime}초</p>
+                            </div>
+                            <div class="player-score">
+                                <p class="score-value">${entry.score}점</p>
+                                <p class="score-detail">${entry.correct}/${entry.total}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+        
+        function showLeaderboard() {
+            renderLeaderboard();
+            showScreen('leaderboard-screen');
+        }
+        
+        function resetLeaderboard() {
+            if (confirm('리더보드의 모든 기록을 삭제하시겠습니까?')) {
+                leaderboard = [];
+                saveLeaderboard();
+                myTimestamp = null;
+                renderLeaderboard();
+                updateParticipantCount();
+            }
+        }
+        
+        // ========================================
+        // 초기화
+        // ========================================
+        loadLeaderboard();
+        updateParticipantCount();
+    </script>
+</body>
+</html>
